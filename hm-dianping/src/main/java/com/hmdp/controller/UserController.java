@@ -38,7 +38,7 @@ public class UserController {
      */
     @PostMapping("code")
     public Result sendCode(@RequestParam("phone") String phone, HttpSession session) {
-        // TODO 发送短信验证码并保存验证码
+        // TODO 发送短信验证码并保存验证码到redis
         return userService.sendCode(phone,session);
     }
 

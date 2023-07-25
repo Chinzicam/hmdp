@@ -30,6 +30,13 @@ import static com.hmdp.utils.RedisConstants.LOGIN_CODE_TTL;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    /**
+     * 验证码发送并存到redis
+     * @param phone
+     * @param session
+     * @return
+     */
     @Override
     public Result sendCode(String phone, HttpSession session) {
         if(RegexUtils.isPhoneInvalid(phone)){
