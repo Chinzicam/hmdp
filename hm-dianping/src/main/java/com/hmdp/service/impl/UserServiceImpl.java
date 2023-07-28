@@ -80,10 +80,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         wrapper.eq(User::getPhone,phone);
 
         User user = userService.getOne(wrapper);
-        log.info("user:{}",user.getPhone());
         if (user==null){
             user = createUserWithPhone(phone);
         }
+        log.info("当前user为:{}",user.getPhone());
         // 7.保存用户信息到 redis中
         // 7.1.随机生成token，作为登录令牌
         String token = UUID.randomUUID().toString(true);
@@ -109,7 +109,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setPhone(phone);
         user.setNickName(USER_NICK_NAME_PREFIX + RandomUtil.randomString(10));
         // 2.保存用户
-        save(user);
+        userService.save(user);
+        log.info("已注册user:{}",user.getPhone());
         return user;
     }
 }
