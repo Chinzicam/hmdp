@@ -57,7 +57,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return Result.fail("手机号格式错误！");
         }
         String code = RandomUtil.randomNumbers(6);
-        //随机六位数验证码存入redis，验证码有效期为两分钟
+        //随机六位数验证码存入redis，验证码有效期为两分钟,(key,value,时间,单位)
         log.info("手机验证码: {}",code);
         stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY + phone, code, LOGIN_CODE_TTL, TimeUnit.MINUTES);
         return Result.ok("验证码发送成功！");
@@ -89,6 +89,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String token = UUID.randomUUID().toString(true);
         // 7.2.将User对象转为HashMap存储
         UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
+        log.info("userDTO的值为:{}",userDTO);
         Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
