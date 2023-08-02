@@ -29,6 +29,12 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    /**
+     * 根据id查询商铺信息
+     * @param id
+     * @return
+     */
     @Override
     public Result queryById(Long id) {
         String key = CACHE_SHOP_KEY + id;
