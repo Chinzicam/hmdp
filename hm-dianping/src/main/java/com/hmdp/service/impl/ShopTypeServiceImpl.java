@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static com.hmdp.utils.RedisConstants.CACHE_SHOP_TTL;
 
 /**
  * <p>
@@ -40,7 +43,7 @@ public class ShopTypeServiceImpl extends ServiceImpl<ShopTypeMapper, ShopType> i
         typeList = typeService.query().orderByAsc("sort").list();
         // 将查询结果写入Redis缓存
         log.info("已将查询结果写入Redis缓存");
-        redisTemplate.opsForValue().set("typeList", typeList);
+        redisTemplate.opsForValue().set("typeList", typeList,CACHE_SHOP_TTL, TimeUnit.MINUTES);
 
         return Result.ok(typeList);
     }
