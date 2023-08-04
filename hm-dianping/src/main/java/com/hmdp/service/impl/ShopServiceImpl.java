@@ -200,6 +200,11 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         stringRedisTemplate.delete(key);
     }
 
+    /**
+     * 设置逻辑过期封装
+     * @param id
+     * @param expireSeconds
+     */
     private void saveShopRedis(Long id,Long expireSeconds){
         Shop shop =getById(id);
         RedisData redisData = new RedisData();
