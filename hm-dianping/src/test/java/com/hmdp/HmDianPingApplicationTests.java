@@ -11,9 +11,11 @@ import javax.annotation.Resource;
 class HmDianPingApplicationTests {
     @Resource
     private IShopService shopService;
+
+    //给逻辑过期的数据提前做缓存
     @Test
     void testSaveShop() {
-        shopService.saveShopRedis(1L, 10L);
+        shopService.saveShopRedis(2L, 2L);
     }
 
     @Test

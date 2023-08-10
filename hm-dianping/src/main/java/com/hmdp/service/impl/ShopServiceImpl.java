@@ -78,7 +78,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         //获取redisData的过期时间
         LocalDateTime expireTime = redisData.getExpireTime();
         //判断是否过期
-        if (expireTime.isBefore(LocalDateTime.now())) {
+        if (expireTime.isAfter(LocalDateTime.now())) {
             return shop;
         }
         // 已过期，需要缓存重建

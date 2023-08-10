@@ -21,6 +21,11 @@ public class RedisIdWorker {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+//    ID的组成部分：符号位：1bit，永远为0
+//
+//    时间戳：31bit，以秒为单位，可以使用69年
+//
+//    序列号：32bit，秒内的计数器，支持每秒产生2^32个不同ID
     public long nextId(String keyPrefix) {
         // 1.生成时间戳
         LocalDateTime now = LocalDateTime.now();
@@ -33,6 +38,7 @@ public class RedisIdWorker {
         stringRedisTemplate.opsForValue().increment("icr:" + keyPrefix + ":" + date);
         // 3.拼接并返回
 
+        //左移32位 ，使用 或操作 拼接
         return timestamp << COUNT_BITS | timestamp;
     }
 
