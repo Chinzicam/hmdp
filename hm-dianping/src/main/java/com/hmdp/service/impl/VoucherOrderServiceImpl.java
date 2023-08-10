@@ -38,6 +38,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 //        wrapper.eq(SeckillVoucher::getVoucherId,voucherId);
 //        SeckillVoucher seckillVoucher = seckillVoucherService.getOne(wrapper);
 
+        // 查询优惠券
         SeckillVoucher voucher = seckillVoucherService.getById(voucherId);
         //判断秒杀是否开始
         if (LocalDateTime.now().isBefore(voucher.getBeginTime())) {
