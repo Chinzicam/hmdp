@@ -35,11 +35,11 @@ public class RedisIdWorker {
         // 2.1.获取当前日期，精确到天
         String date = now.format(DateTimeFormatter.ofPattern("yyyy:MM:dd"));
         // 2.2.自增长
-        stringRedisTemplate.opsForValue().increment("icr:" + keyPrefix + ":" + date);
+        long count = stringRedisTemplate.opsForValue().increment("icr:" + keyPrefix + ":" + date);
         // 3.拼接并返回
 
         //左移32位 ，使用 或操作 拼接
-        return timestamp << COUNT_BITS | timestamp;
+        return timestamp << COUNT_BITS | count;
     }
 
 

@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hmdp.utils.RedisIdWorker;
 import com.hmdp.utils.UserHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -58,14 +59,25 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 
     /**
      * 创建订单
+     *
      * @param voucherId
      * @return
      */
-    private Result createVoucherOrder(Long voucherId) {
+    @Transactional
+    public Result createVoucherOrder(Long voucherId) {
+
+//        //通过订单号和id,判断是否是同一人,一人一单逻辑
+//        Long userId = UserHolder.getUser().getId();
+//        int count = query().eq("voucher_id", voucherId).eq("user_id", userId).count();
+//        if (count>0){
+//            return Result.fail("已经下单过啦");
+//        }
+
         //扣减库存
         boolean success = seckillVoucherService.update()
                 .setSql("stock = stock - 1") // set stock = stock - 1
                 .eq("voucher_id", voucherId).gt("stock", 0) // where id = ? and stock > 0
+                .gt("stock", 0)//库存大于0
                 .update();
         if (!success) {
             // 扣减失败
