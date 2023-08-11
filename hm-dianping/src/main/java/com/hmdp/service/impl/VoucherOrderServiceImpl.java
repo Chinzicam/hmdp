@@ -51,10 +51,14 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         }
         //判断是否还有库存
         if (voucher.getStock() < 1) {
-            return Result.fail("判断秒杀是否开始,库存不足！");
+            return Result.fail("优惠券已被抢光了哦，下次记得手速快点");
         }
-        //创建订单
-        return createVoucherOrder(voucherId);
+        Long userId = UserHolder.getUser().getId();
+        synchronized (userId.toString().intern()){
+            //创建订单
+            return createVoucherOrder(voucherId);
+        }
+
     }
 
     /**
@@ -66,18 +70,20 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     @Transactional
     public Result createVoucherOrder(Long voucherId) {
 
-//        //通过订单号和id,判断是否是同一人,一人一单逻辑
-//        Long userId = UserHolder.getUser().getId();
-//        int count = query().eq("voucher_id", voucherId).eq("user_id", userId).count();
-//        if (count>0){
-//            return Result.fail("已经下单过啦");
-//        }
+        //通过订单号和id,判断是否是同一人,一人一单逻辑
+        Long userId = UserHolder.getUser().getId();
+        int count = query().eq("voucher_id", voucherId)
+                .eq("user_id", userId)
+                .count();
+        if (count > 0) {
+            return Result.fail("已经抢过优惠券了哦");
+        }
 
         //扣减库存
         boolean success = seckillVoucherService.update()
                 .setSql("stock = stock - 1") // set stock = stock - 1
-                .eq("voucher_id", voucherId).gt("stock", 0) // where id = ? and stock > 0
-                .gt("stock", 0)//库存大于0
+                .eq("voucher_id", voucherId)// where id = ? and stock > 0
+                .gt("stock", 0)//库存大于0,乐观锁
                 .update();
         if (!success) {
             // 扣减失败
