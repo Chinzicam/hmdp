@@ -47,10 +47,12 @@ public class Blog implements Serializable {
     private String icon;
     /**
      * 用户姓名
+     * 额外字段，数据库不存在
      */
     @TableField(exist = false)
     private String name;
     /**
+     * 额外字段，数据库不存在
      * 是否点赞过了
      */
     @TableField(exist = false)

@@ -32,17 +32,22 @@ public class ShopTypeServiceImpl extends ServiceImpl<ShopTypeMapper, ShopType> i
     private RedisTemplate redisTemplate;
     @Resource
     private IShopTypeService typeService;
+
+    /**
+     * 商铺分类缓存
+     * @return
+     */
     @Override
     public Result queryTypeList() {
         List<ShopType> typeList = (List<ShopType>) redisTemplate.opsForValue().get("typeList");
 
         if (typeList != null) {
-            log.info("typelist不为空,不写入数据");
+            log.info("商铺分类已缓存,不写入数据");
             return Result.ok(typeList);
         }
         typeList = typeService.query().orderByAsc("sort").list();
         // 将查询结果写入Redis缓存
-        log.info("已将查询结果写入Redis缓存");
+        log.info("已将商铺分类写入Redis缓存");
         redisTemplate.opsForValue().set("typeList", typeList,CACHE_SHOP_TTL, TimeUnit.MINUTES);
 
         return Result.ok(typeList);
