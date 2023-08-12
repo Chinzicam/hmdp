@@ -12,6 +12,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+/**
+ * 上传/下载图片
+ * @author czc
+ */
 @Slf4j
 @RestController
 @RequestMapping("upload")
@@ -34,6 +38,11 @@ public class UploadController {
         }
     }
 
+    /**
+     * 删除图片
+     * @param filename
+     * @return
+     */
     @GetMapping("/blog/delete")
     public Result deleteBlogImg(@RequestParam("name") String filename) {
         File file = new File(SystemConstants.IMAGE_UPLOAD_DIR, filename);
@@ -44,6 +53,11 @@ public class UploadController {
         return Result.ok();
     }
 
+    /**
+     * 上传图片到本地
+     * @param originalFilename
+     * @return
+     */
     private String createNewFileName(String originalFilename) {
         // 获取后缀
         String suffix = StrUtil.subAfter(originalFilename, ".", true);
