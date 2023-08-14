@@ -1,6 +1,8 @@
 package com.hmdp.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.BooleanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hmdp.dto.Result;
 import com.hmdp.dto.UserDTO;
@@ -16,7 +18,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static com.hmdp.utils.RedisConstants.BLOG_LIKED_KEY;
 
@@ -116,6 +121,48 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
             }
         }
         return Result.ok();
+    }
+
+    /**
+     * 点赞排行榜
+     * @param id
+     * @return
+     */
+    @Override
+    public Result queryBlogLikes(Integer id) {
+        String key=BLOG_LIKED_KEY+id;
+        //zrange key 0 4  查询zset中前5个元素
+        Set<String> top5 = stringRedisTemplate.opsForZSet().range(key, 0, 4);
+        //如果是空的(可能没人点赞)，直接返回一个空集合
+        if (top5 == null || top5.isEmpty()) {
+            return Result.ok(Collections.emptyList());
+        }
+        List<Long> ids = new ArrayList<>();
+        for (String value : top5) {
+            ids.add(Long.valueOf(value));
+        }
+
+        // 将 ids 使用 ',' 拼接
+        StringBuilder idsStr = new StringBuilder();
+        for (int i = 0; i < ids.size(); i++) {
+            idsStr.append(ids.get(i));
+            if (i != ids.size() - 1) {
+                idsStr.append(",");
+            }
+        }
+
+        // 查询用户信息，按照 ids 的顺序排序
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("id", ids);
+        queryWrapper.last("order by field(id," + idsStr + ")");
+        List<UserDTO> userDTOS = new ArrayList<>();
+        List<User> userList = userService.list(queryWrapper);
+        for (User user : userList) {
+            UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
+            userDTOS.add(userDTO);
+        }
+
+        return Result.ok(userDTOS);
     }
 
     /**
