@@ -1,6 +1,7 @@
 package com.hmdp.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hmdp.dto.Result;
 import com.hmdp.dto.UserDTO;
@@ -82,6 +83,22 @@ public class BlogController {
     @GetMapping("/likes/{id}")
     public Result queryBlogLikes(@PathVariable Integer id){
         return blogService.queryBlogLikes(id);
+    }
+
+    /**
+     * 根据id查询博主的探店笔记
+     * @param current
+     * @param id
+     * @return
+     */
+    @GetMapping("/of/user")
+    public Result queryBlogByUserId(@RequestParam(value = "current", defaultValue = "1") Integer current, @RequestParam("id") Long id) {
+        LambdaQueryWrapper<Blog> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Blog::getUserId, id);
+        Page<Blog> pageInfo = new Page<>(current, SystemConstants.MAX_PAGE_SIZE);
+        blogService.page(pageInfo, queryWrapper);
+        List<Blog> records = pageInfo.getRecords();
+        return Result.ok(records);
     }
 
 }
