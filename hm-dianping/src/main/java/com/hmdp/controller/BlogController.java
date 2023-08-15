@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
 
+import static com.hmdp.utils.SystemConstants.MAX_PAGE_SIZE;
+
 /**
  * <p>
  * 前端控制器
@@ -54,7 +56,7 @@ public class BlogController {
         UserDTO user = UserHolder.getUser();
         // 根据用户查询
         Page<Blog> page = blogService.query()
-                .eq("user_id", user.getId()).page(new Page<>(current, SystemConstants.MAX_PAGE_SIZE));
+                .eq("user_id", user.getId()).page(new Page<>(current, MAX_PAGE_SIZE));
         // 获取当前页数据
         List<Blog> records = page.getRecords();
         return Result.ok(records);
@@ -67,21 +69,23 @@ public class BlogController {
 
     /**
      * 根据id查询笔记信息，返回笔记信息和个人信息
+     *
      * @param id
      * @return
      */
     @GetMapping("/{id}")
-    public Result queryBlogById(@PathVariable Integer id){
+    public Result queryBlogById(@PathVariable Integer id) {
         return blogService.queryBlogById(id);
     }
 
     /**
      * 点赞排行榜
+     *
      * @param id
      * @return
      */
     @GetMapping("/likes/{id}")
-    public Result queryBlogLikes(@PathVariable Integer id){
+    public Result queryBlogLikes(@PathVariable Integer id) {
         return blogService.queryBlogLikes(id);
     }
 
@@ -95,7 +99,7 @@ public class BlogController {
     public Result queryBlogByUserId(@RequestParam(value = "current", defaultValue = "1") Integer current, @RequestParam("id") Long id) {
         LambdaQueryWrapper<Blog> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Blog::getUserId, id);
-        Page<Blog> pageInfo = new Page<>(current, SystemConstants.MAX_PAGE_SIZE);
+        Page<Blog> pageInfo = new Page<>(current, MAX_PAGE_SIZE);
         blogService.page(pageInfo, queryWrapper);
         List<Blog> records = pageInfo.getRecords();
         return Result.ok(records);
