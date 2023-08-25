@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hmdp.mapper.BlogMapper">
+
+    <select id="getFollowsByUserId" resultType="com.hmdp.entity.Blog" parameterType="java.lang.Long">
+        select * from tb_follow where follow_user_id = #{user_id}
+    </select>
+</mapper>
